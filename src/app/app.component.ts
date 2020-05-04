@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef } from "@angular/core";
 import { Chart } from "chart.js";
 import { DatePipe } from "@angular/common";
-import { ApiService, Covid } from "./api.service";
+import { ApiService, Covid, Country } from "./api.service";
 import { MaterialsModule } from "./material";
 
 @Component({
@@ -22,15 +22,23 @@ export class AppComponent {
   confirmados = [];
   mortos = [];
   recuperados = [];
+  countries: Country[];
 
-  Ma
+  getCountries() {
+    this.apiService.getCountries()
+    .subscribe(
+      response => {
+        this.countries = response;
+        //console.log(this.countries);
+      });
+  }
 
   showConfig() {
     this.apiService.getCovid().subscribe(
       data => {
         this.covid = data;
         this.covid.forEach(covid => {
-          this.datas.push(this.datepipe.transform(covid.Date, "dd-MM-yyyy"));
+          this.datas.push(this.datepipe.transform(covid.Date.toString().replace('Z',''), "dd-MM-yyyy"));
           this.confirmados.push(covid.Confirmed);
           this.mortos.push(covid.Deaths);
           this.recuperados.push(covid.Recovered);
@@ -81,5 +89,6 @@ export class AppComponent {
 
   ngOnInit() {
     this.showConfig();
+    this.getCountries();
   }
 }

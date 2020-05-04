@@ -6,6 +6,15 @@
     <mat-card-subtitle>Brasil</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
+    <mat-form-field>
+    <mat-label>Paises</mat-label>
+    <mat-select>
+      <mat-option [value]="Global">Global</mat-option>
+      <mat-option *ngFor="let country of countries" [value]="country.name">
+        {{country.name}}
+      </mat-option>
+    </mat-select>
+    </mat-form-field>
     <div>
       <canvas #meuCanvas></canvas>
     </div>

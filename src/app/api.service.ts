@@ -1,32 +1,39 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { catchError, retry, map } from 'rxjs/operators';
 
 export interface Config {
   heroesUrl: string;
   textfile: string;
 }
 
- export interface Covid {
-        Country: string;
-        CountryCode: string;
-        Province: string;
-        City: string;
-        CityCode: string;
-        Lat: string;
-        Lon: string;
-        Confirmed: number;
-        Deaths: number;
-        Recovered: number;
-        Active: number;
-        Date: Date;
-    }
+export interface Covid {
+  Country: string;
+  CountryCode: string;
+  Province: string;
+  City: string;
+  CityCode: string;
+  Lat: string;
+  Lon: string;
+  Confirmed: number;
+  Deaths: number;
+  Recovered: number;
+  Active: number;
+  Date: Date;
+}
+
+export interface Country {
+  name: string;
+  iso2: string;
+  iso3: string;
+}
 
 @Injectable()
 export class ApiService {
   constructor(private http: HttpClient) { }
-  url = 'https://api.covid19api.com/live/country/Brazil/status/confirmed';
+  url = 'https://api.covid19api.com/country/Brazil';
+  urlPaises = 'https://covid19.mathdro.id/api/countries';
 
   getCovid() {
     return this.http.get<Covid[]>(this.url)
@@ -35,6 +42,18 @@ export class ApiService {
         catchError(this.handleError)
       );
   }
+
+  getCountries() {
+    return this.http.get(this.urlPaises)
+      
+      
+      .pipe(
+        retry(3), // retry a failed request up to 3 times
+        map(res => res.countries),
+        catchError(this.handleError)
+      );
+  }
+
   getConfigResponse(): Observable<HttpResponse<Config>> {
     return this.http.get<Config>(
       this.url, { observe: 'response' });
